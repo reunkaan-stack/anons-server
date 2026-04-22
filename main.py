@@ -14,6 +14,7 @@ app = FastAPI()
 DB = "licenses.db"
 TRIAL_DAYS = 7
 ADMIN_TOKEN = os.environ.get("ADMIN_TOKEN", "degistir-bunu-gizli-tut")
+CURRENT_VERSION = os.environ.get("APP_VERSION", "1.0")  # Render'dan guncelle
 
 # ── Veritabanı ─────────────────────────────────────────────────────────────
 
@@ -231,6 +232,12 @@ def list_trials():
     rows = conn.execute("SELECT * FROM trials ORDER BY first_seen DESC").fetchall()
     conn.close()
     return [dict(r) for r in rows]
+
+
+@app.get("/version")
+def get_version():
+    """Guncel uygulama versiyonunu dondur."""
+    return {"version": CURRENT_VERSION}
 
 
 @app.get("/admin/stats", dependencies=[Depends(check_admin)])
